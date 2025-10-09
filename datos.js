@@ -13,7 +13,7 @@ function conectar(){
     });
 };
 
-function crearPost(texto,usuario){
+export function crearPost(texto,usuario){
     return new Promise((ok,ko) => {
         const conexion = conectar();
 
@@ -26,7 +26,7 @@ function crearPost(texto,usuario){
     });
 };
 
-function leerPosts(usuario){
+export function leerPosts(usuario){
     return new Promise((ok,ko) => {
         const conexion = conectar();
 
@@ -39,7 +39,7 @@ function leerPosts(usuario){
     });
 };
 
-function borrarPost(id){
+export function borrarPost(id){
     return new Promise((ok,ko) => {
         const conexion = conectar();
 
@@ -52,7 +52,7 @@ function borrarPost(id){
     });
 };
 
-function editarPosts(id,texto){
+export function editarPosts(id,texto){
     return new Promise((ok,ko) => {
         const conexion = conectar();
 
@@ -64,7 +64,3 @@ function editarPosts(id,texto){
         .catch(() => ko({ error: "error en base de datos"}));
     });
 };
-
-leerPosts(1)
-.then(x => console.log(x))
-.catch(x => console.log(x))
