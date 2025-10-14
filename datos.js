@@ -13,6 +13,32 @@ function conectar(){
     });
 };
 
+export function crearUsuario(usuario,hash){
+    return new Promise((ok,ko) => {
+        const conexion = conectar();
+
+        conexion`INSERT INTO usuarios (usuario, password) VALUES (${usuario}, ${hash}) RETURNING id`
+        .then(([{ id }]) => {
+            conexion.end();
+            ok(id);
+        })
+        .catch(() => ko({ error: "error en base de datos"}));       
+    });
+}
+
+export function buscarUsuario(usuario){
+    return new Promise((ok,ko) => {
+        const conexion = conectar();
+
+        conexion `SELECT * FROM usuarios WHERE usuario = ${usuario}`
+        .then(([usuario]) => {
+            conexion.end();
+            ok(usuario)
+        })
+        .catch(() => ko({ error: "error en base de datos"}));
+    });
+};
+
 export function crearPost(texto,usuario){
     return new Promise((ok,ko) => {
         const conexion = conectar();
@@ -64,3 +90,5 @@ export function editarPosts(id,texto){
         .catch(() => ko({ error: "error en base de datos"}));
     });
 };
+
+

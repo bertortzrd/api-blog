@@ -2,19 +2,88 @@ import dotenv from "dotenv";
 dotenv.config();
 //----------------------------------
 import express from "express";
-import { crearPost, leerPosts, borrarPost, editarPosts } from "./datos.js";
 import cors from "cors";
+import bcrypt from "bcrypt"
+import jwt from "jsonwebtoken"
+import { buscarUsuario, crearUsuario, crearPost, leerPosts, borrarPost, editarPosts } from "./datos.js";
+
+function autorizar(pet,res,siguiente){
+    let token = pet.headers.authorization.split(" ")[1];
+    jwt.verify(token, process.env.SECRET, (error,datos) => {
+        if(!error){
+            pet.usuario = datos.id;
+            return siguiente();
+        }
+        res.sendStatus(401);
+    });
+};
 
 const servidor = express();
 
 servidor.use(cors());
 servidor.use(express.json());
 
-//BORRAR LUEGO
-servidor.use((pet,res,siguiente) => {
-    pet.usuario = 1;
-    siguiente();
+servidor.post("/registro", async (pet,res,siguiente) => {
+    let {usuario,password} = pet.body;
+
+    if(usuario == undefined || 
+        usuario.toString().trim() == "" ||
+        password == undefined || 
+        password.toString().trim() == "" )
+    {
+    return siguiente(true);
+    }
+
+    try{
+        let existe = await buscarUsuario(usuario);
+        if(existe){
+            res.status(409);
+            res.json({error: "el usuario ya existe"});
+        }
+
+        let hash = await bcrypt.hash(password,10);
+        let id = await crearUsuario(usuario,hash);
+        res.status(201);
+        res.json({id, usuario});
+    }catch(error){
+        res.status(500);
+        res.json({error: "error en el servidor"})
+    }    
 });
+
+
+servidor.post("/login", async (pet,res,siguiente) => {
+    let {usuario,password} = pet.body;
+
+    if(usuario == undefined || 
+        usuario.toString().trim() == "" ||
+        password == undefined || 
+        password.toString().trim() == "" )
+    {
+    return siguiente(true);
+    }
+
+    try{
+        let datos = await buscarUsuario(usuario);
+        if(!datos){
+            return res.sendStatus(401);
+        }
+
+        let valido = await bcrypt.compare(password,datos.password);
+        if(!valido){
+            return res.sendStatus(403);
+        }
+
+        let token = jwt.sign({ id: datos.id }, process.env.SECRET)
+        res.json({token});
+    }catch(error){
+        res.status(500);
+        res.json({error: "error en el servidor"})
+    }    
+});
+
+
+servidor.use(autorizar);
 
 servidor.get("/posts", async (pet,res) => {
     try{
