@@ -91,7 +91,7 @@ servidor.use(autorizar);
 
 servidor.get("/posts", async (pet,res) => {
     try{
-        let posts = await leerPosts(pet.usuario);
+        let posts = await leerPosts();
         res.json(posts);
     }catch(error){
         res.status(500);
@@ -100,9 +100,6 @@ servidor.get("/posts", async (pet,res) => {
 });
 
 servidor.post("/posts/nuevo", async (pet,res,siguiente) => {
-
-    console.log("Body recibido:", pet.body);      // 👈 Ver qué texto llega
-    console.log("Usuario recibido:", pet.usuario)
 
     let {texto} = pet.body;
 

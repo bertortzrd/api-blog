@@ -56,7 +56,7 @@ export function leerPosts(usuario){
     return new Promise((ok,ko) => {
         const conexion = conectar();
 
-        conexion `SELECT * FROM posts WHERE usuario = ${usuario} ORDER BY id`
+        conexion `SELECT posts.id, posts.texto, usuarios.usuario AS autor FROM posts JOIN usuarios ON posts.usuario_id = usuarios.id ORDER BY posts.id DESC`
         .then(posts => {
             conexion.end();
             ok(posts)
