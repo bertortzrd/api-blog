@@ -102,10 +102,15 @@ servidor.post("/posts/nuevo", async (pet,res,siguiente) => {
     return siguiente(true);
     }
 
+console.log("Token:", pet.headers.authorization);
+console.log("Usuario:", pet.usuario);
+console.log("Texto:", texto);
+
     try{
         let id = await crearPost(texto,pet.usuario);
         res.json({id});
     }catch(error){
+        console.error("Error en crearPost:", error);
         res.status(500);
         res.json({error: "error en el servidor"})
     }
