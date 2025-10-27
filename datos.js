@@ -52,14 +52,14 @@ export function crearPost(texto,usuario){
     });
 };
 
-export function leerPosts(usuario){
+export function leerPosts(){
     return new Promise((ok,ko) => {
         const conexion = conectar();
 
-        conexion `SELECT * FROM posts ORDER BY id`
+        conexion `SELECT posts.id AS _id, posts.texto, usuarios.usuario AS autor FROM posts JOIN usuarios ON posts.autor = usuarios.id ORDER BY posts.id DESC`
         .then(posts => {
             conexion.end();
-            ok(posts)
+            ok(posts.rows)
         })
         .catch(() => ko({ error: "error en base de datos"}));
     });
