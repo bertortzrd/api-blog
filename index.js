@@ -8,7 +8,11 @@ import jwt from "jsonwebtoken"
 import { buscarUsuario, crearUsuario, crearPost, leerPosts, borrarPost, editarPosts } from "./datos.js";
 
 function autorizar(pet,res,siguiente){
+
+    if(!pet.headers.authorization) return res.sendStatus(401);   
+
     let token = pet.headers.authorization.split(" ")[1];
+    if (!token) return res.sendStatus(401);
     jwt.verify(token, process.env.SECRET, (error,datos) => {
         if(!error){
             pet.usuario = datos.id;
@@ -96,15 +100,15 @@ servidor.get("/posts", async (pet,res) => {
 });
 
 servidor.post("/posts/nuevo", async (pet,res,siguiente) => {
+
+    console.log("Body recibido:", pet.body);      // 👈 Ver qué texto llega
+    console.log("Usuario recibido:", pet.usuario)
+
     let {texto} = pet.body;
 
     if(texto == undefined || texto.toString().trim() == ""){
     return siguiente(true);
     }
-
-console.log("Token:", pet.headers.authorization);
-console.log("Usuario:", pet.usuario);
-console.log("Texto:", texto);
 
     try{
         let id = await crearPost(texto,pet.usuario);
