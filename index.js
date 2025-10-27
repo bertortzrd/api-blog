@@ -90,8 +90,10 @@ servidor.post("/login", async (pet,res,siguiente) => {
 servidor.use(autorizar);
 
 servidor.get("/posts", async (pet,res) => {
+    // leerPosts devuelve todos los posts de todos los usuarios
     try{
-        let posts = await leerPosts();
+        let posts = await leerPosts(); //sin filtrar por pet.usuario
+        if(!Array.isArray(posts)) posts = []  // para garantizar que sea un array
         res.json(posts);
     }catch(error){
         res.status(500);
