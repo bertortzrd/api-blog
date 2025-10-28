@@ -57,7 +57,7 @@ export function leerPosts(){
     return new Promise((ok,ko) => {
         const conexion = conectar();
 
-        conexion `SELECT posts.id AS _id, posts.texto, usuarios.usuario AS autor FROM posts JOIN usuarios ON posts.usuario = usuarios.id ORDER BY posts.id DESC`
+        conexion `SELECT posts.id AS _id, posts.texto, usuarios.usuario AS autor, COALESCE(like_count.count, 0) AS likes FROM posts JOIN usuarios ON posts.usuario = usuarios.id LEFT JOIN (SELECT post_id, COUNT(*) AS count FROM likes GROUP BY post_id) AS like_count ON posts.id = like_count.post_id ORDER BY posts.id DESC`
         .then(posts => {
             conexion.end();
             ok(posts)
@@ -65,6 +65,19 @@ export function leerPosts(){
         .catch(() => ko({ error: "error en base de datos"}));
     });
 };
+
+export function darLike(postId,usuarioId){
+    return new Promise((ok,ko) => {
+        const conexion = conectar();
+
+        conexion `INSERT INTO likes (post_id, usuario_id) VALUES (${postId}, ${usuarioId}) ON CONFLICT DO NOTHING`
+        .then(() => {
+            conexion.end();
+            ok({success:true})
+        })
+        .catch(() => ko({ error: "error en base de datos"}));
+    })
+}
 
 export function borrarPost(id){
     return new Promise((ok,ko) => {

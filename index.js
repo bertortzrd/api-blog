@@ -5,7 +5,7 @@ import express from "express";
 import cors from "cors";
 import bcrypt from "bcrypt"
 import jwt from "jsonwebtoken"
-import { buscarUsuario, crearUsuario, crearPost, leerPosts, borrarPost, editarPosts } from "./datos.js";
+import { buscarUsuario, crearUsuario, crearPost, leerPosts, borrarPost, editarPosts, darLike } from "./datos.js";
 
 function autorizar(pet,res,siguiente){
 
@@ -116,6 +116,22 @@ servidor.post("/posts/nuevo", async (pet,res,siguiente) => {
         console.error("Error en crearPost:", error);
         res.status(500);
         res.json({error: "error en el servidor"})
+    }
+});
+
+servidor.post("/posts/like/:id", async (pet,res) => {
+    let postId = Number(pet.params.id);
+    let usuarioId = pet.usuario;
+    
+    if(!postId) return res.status(400).json({error: "id de post inváido"});
+
+    try{
+        await darLike(postId, usuarioId);
+        res.json({id});
+    } catch (error){
+        console.error("Error al dar like:", error);
+        res.status(500);
+        res.json({ error: "error en el servidor" });        
     }
 });
 
