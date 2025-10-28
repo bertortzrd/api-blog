@@ -127,7 +127,7 @@ servidor.post("/posts/like/:id", async (pet,res,siguiente) => {
 
     try{
         await darLike(postId, usuarioId);
-        res.json({ success: true });
+        res.json({likeAgregado: resultado > 0});
     } catch (error){
         console.error("Error al dar like:", error);
         res.status(500);

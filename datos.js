@@ -71,9 +71,9 @@ export function darLike(postId,usuarioId){
         const conexion = conectar();
 
         conexion `INSERT INTO likes (post_id, usuario_id) VALUES (${postId}, ${usuarioId}) ON CONFLICT DO NOTHING`
-        .then(() => {
+        .then(({count}) => {
             conexion.end();
-            ok({success:true})
+            ok(count)
         })
         .catch(() => ko({ error: "error en base de datos"}));
     })
