@@ -106,7 +106,7 @@ servidor.post("/posts/nuevo", async (pet,res,siguiente) => {
     let {texto} = pet.body;
 
     if(texto == undefined || texto.toString().trim() == ""){
-    return siguiente(true);
+    return siguiente(true); //validación para que no esté vacío
     }
 
     try{

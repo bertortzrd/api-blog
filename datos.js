@@ -44,9 +44,9 @@ export function crearPost(texto,usuario){
         const conexion = conectar();
 
         conexion `INSERT INTO posts (texto,usuario) VALUES(${texto},${usuario}) RETURNING id`
-        .then(([{id}]) => {
+        .then(resultado => {
             conexion.end();
-            ok(id)
+            ok(resultado.rows[0].id)
         })
         .catch(() => ko({ error: "error en base de datos"}));
     });
