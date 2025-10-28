@@ -126,7 +126,7 @@ servidor.post("/posts/like/:id", async (pet,res,siguiente) => {
     if(!postId) return res.status(400).json({error: "id de post inváido"});
 
     try{
-        await darLike(postId, usuarioId);
+        let resultado = await darLike(postId, usuarioId);
         res.json({likeAgregado: resultado > 0});
     } catch (error){
         console.error("Error al dar like:", error);
