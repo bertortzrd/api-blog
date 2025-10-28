@@ -40,13 +40,14 @@ export function buscarUsuario(usuario){
 };
 
 export function crearPost(texto,usuario){
+    console.log("crearPost -> texto:", texto, "usuario:", usuario);
     return new Promise((ok,ko) => {
         const conexion = conectar();
 
         conexion `INSERT INTO posts (texto,usuario) VALUES(${texto},${usuario}) RETURNING id`
-        .then(resultado => {
+        .then(([{id}]) => {
             conexion.end();
-            ok(resultado.rows[0].id)
+            ok(id)
         })
         .catch(() => ko({ error: "error en base de datos"}));
     });
@@ -59,7 +60,7 @@ export function leerPosts(){
         conexion `SELECT posts.id AS _id, posts.texto, usuarios.usuario AS autor FROM posts JOIN usuarios ON posts.usuario = usuarios.id ORDER BY posts.id DESC`
         .then(posts => {
             conexion.end();
-            ok(posts.rows)
+            ok(posts)
         })
         .catch(() => ko({ error: "error en base de datos"}));
     });
