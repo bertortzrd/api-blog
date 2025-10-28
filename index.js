@@ -119,15 +119,18 @@ servidor.post("/posts/nuevo", async (pet,res,siguiente) => {
     }
 });
 
-servidor.post("/posts/like/:id", async (pet,res) => {
+servidor.post("/posts/like/:id", async (pet,res,siguiente) => {
     let postId = Number(pet.params.id);
     let usuarioId = pet.usuario;
     
     if(!postId) return res.status(400).json({error: "id de post inváido"});
 
     try{
-        await darLike(postId, usuarioId);
-        res.json({success: true});
+        let like = await darLike(postId, usuarioId);
+        if(!like){
+            return siguiente();
+        }
+        res.sendStatus(204);
     } catch (error){
         console.error("Error al dar like:", error);
         res.status(500);
